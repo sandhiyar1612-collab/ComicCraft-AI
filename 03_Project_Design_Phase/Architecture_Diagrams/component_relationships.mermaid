@@ -1,0 +1,52 @@
+```mermaid
+classDiagram
+    class FastAPIApp {
+        +include_router()
+        +mount(static)
+    }
+
+    class Router {
+        +home(Request)
+        +generate_comic(Request, Form)
+        +generate_comic_json(PromptRequest)
+        +export_success(Request, pdf_path)
+        +all_users(Request)
+        +download_pdf(file_path)
+        +save_key(payload)
+        +test_image(prompt)
+    }
+
+    class GeminiFlash {
+        +generate_outline(user_prompt, api_key) list
+        -_generate_fallback_outline(user_prompt) list
+    }
+
+    class GeminiPro {
+        +generate_story(outline, api_key) str
+        -_generate_fallback_story(outline) str
+    }
+
+    class ImageGenerator {
+        +generate_image(prompt, filename, api_key) str
+        -generate_image_with_gemini_imagen() bool
+        -generate_image_with_gemini_svg() bool
+        -_draw_comic_scenic_image()
+    }
+
+    class LayoutBuilder {
+        +build_comic_layout(image_paths, full_story, outline) list
+    }
+
+    class PDFExporter {
+        +clean_text_for_pdf(text) str
+        +save_pdf(layout) str
+    }
+
+    FastAPIApp --> Router
+    Router --> GeminiFlash : calls
+    Router --> GeminiPro : calls
+    Router --> ImageGenerator : calls
+    Router --> LayoutBuilder : calls
+    Router --> PDFExporter : calls
+    PDFExporter ..> LayoutBuilder : consumes layout
+```

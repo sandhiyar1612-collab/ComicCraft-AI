@@ -1,0 +1,33 @@
+```mermaid
+flowchart TD
+    Start([User Initiates Comic Generation]) --> Input[User provides prompt, character, setting, tone, style]
+    Input --> Aggregate[Aggregates inputs into Master Prompt]
+    
+    Aggregate --> FlashCall{Invoke Gemini Flash}
+    FlashCall -->|Success| OutlineJSON[5-Panel Outline JSON]
+    FlashCall -->|API Unavailable / Error| FallbackOutline[Algorithmic 5-Panel Outline Fallback]
+    OutlineJSON --> ScriptCall{Invoke Gemini Pro}
+    FallbackOutline --> ScriptCall
+
+    ScriptCall -->|Success| StoryScript[Comic Script with Dialogue, SFX, Captions]
+    ScriptCall -->|API Unavailable / Error| FallbackScript[Algorithmic Comic Script Fallback]
+
+    StoryScript --> ImgLoop[Iterate through Panels 1 to 5]
+    FallbackScript --> ImgLoop
+
+    ImgLoop --> ImgCheck{Select Image Engine}
+    ImgCheck -->|Tier 1| Imagen3[Google Imagen 3 API]
+    ImgCheck -->|Tier 2| GeminiSVG[Gemini Comic SVG Engine]
+    ImgCheck -->|Tier 3 / Fallback| ScenicPillow[Pillow Scenic Halftone Comic Engine]
+
+    Imagen3 --> PanelPNG[Save Panel PNG in static/panels/]
+    GeminiSVG --> PanelPNG
+    ScenicPillow --> PanelPNG
+
+    PanelPNG --> LayoutMerge[layout_builder.py binds Images + Text + Metadata]
+    LayoutMerge --> PDFGen[exporters.py compiles multi-page A4 PDF]
+    PDFGen --> PDFSaved[Save PDF in static/exports/comic_*.pdf]
+    
+    PDFSaved --> RenderPreview[Render comic_preview.html with Download Link]
+    RenderPreview --> End([User reads comic & downloads PDF])
+```

@@ -1,0 +1,62 @@
+```mermaid
+graph TB
+    subgraph Client["Client Tier"]
+        Browser["Modern Web Browser"]
+        APIClient["REST API Consumer / CLI"]
+    end
+
+    subgraph Server["Application Server (FastAPI + Uvicorn)"]
+        Routes["app.routes (Endpoints & Handlers)"]
+        Templates["Jinja2 Template Engine"]
+        StaticServer["FastAPI StaticFiles Mount (/static)"]
+    end
+
+    subgraph Engines["Core ComicCraft Engines"]
+        FlashEngine["gemini_flash.py (Outline Planner)"]
+        ProEngine["gemini_pro.py (Story & Dialogue Writer)"]
+        ImgEngine["image_generator.py (Comic Inker)"]
+        LayoutEngine["layout_builder.py (Layout Compiler)"]
+        PDFEngine["exporters.py (FPDF2 PDF Builder)"]
+    end
+
+    subgraph External["External Cloud AI Services"]
+        GeminiAPI["Google Gemini API (Flash & Pro)"]
+        ImagenAPI["Google Imagen 3 Diffusion"]
+    end
+
+    subgraph Fallbacks["Built-in Offline Fallback Engines"]
+        AlgoStory["Algorithmic Storyteller (RegEx based)"]
+        PillowHalftone["Procedural Scenic Comic Engine (Pillow)"]
+    end
+
+    subgraph Storage["Filesystem Storage"]
+        PanelsDir["static/panels/ (*.png)"]
+        ExportsDir["static/exports/ (*.pdf)"]
+        FontsDir["static/fonts/ (*.ttf)"]
+    end
+
+    Browser -->|HTTP GET/POST| Routes
+    APIClient -->|JSON Request| Routes
+    Routes --> Templates
+    Templates --> Browser
+    StaticServer --> Browser
+
+    Routes --> FlashEngine
+    Routes --> ProEngine
+    Routes --> ImgEngine
+    Routes --> LayoutEngine
+    Routes --> PDFEngine
+
+    FlashEngine -->|Prompt| GeminiAPI
+    FlashEngine -.->|Fallback on error| AlgoStory
+    ProEngine -->|Outline| GeminiAPI
+    ProEngine -.->|Fallback on error| AlgoStory
+
+    ImgEngine -->|Prompt| ImagenAPI
+    ImgEngine -.->|Fallback on error| PillowHalftone
+
+    ImgEngine --> PanelsDir
+    PDFEngine --> ExportsDir
+    PDFEngine --> FontsDir
+    PanelsDir --> PDFEngine
+```
