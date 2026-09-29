@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  comiccraft:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: comiccraft_app
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - HF_API_KEY=${HF_API_KEY:-}
+      - HOST=0.0.0.0
+      - PORT=8000
+    volumes:
+      - ./static/exports:/app/static/exports
+      - ./static/panels:/app/static/panels
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3

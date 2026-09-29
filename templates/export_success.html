@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comic Exported Successfully! - ComicCraft</title>
+    <meta name="description" content="Your AI-generated comic has been successfully compiled and downloaded.">
+    <link rel="stylesheet" href="/static/css/comic.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎉</text></svg>">
+</head>
+<body>
+    <div class="comic-texture-wrapper">
+        <!-- Top Comic Header -->
+        <header class="comic-header">
+            <div class="comic-header-inner">
+                <a href="/" class="comic-logo">
+                    <span class="logo-badge">SUCCESS</span>
+                    <span class="logo-text">COMICCRAFT</span>
+                </a>
+                <div class="comic-nav-links">
+                    <a href="/" class="comic-btn btn-white" style="font-size: 16px; padding: 6px 16px;">
+                        &larr; Homepage
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Success Card -->
+        <main style="max-width: 760px; margin: 60px auto 40px; padding: 0 16px;">
+            <div class="comic-card success-card">
+                <!-- Big Celebration SFX Burst -->
+                <div class="success-icon-burst">🎉</div>
+                
+                <div style="margin-bottom: 20px;">
+                    <span class="issue-badge" style="background: var(--comic-green); color: #fff;">EXPORT COMPLETE</span>
+                </div>
+
+                <h1 class="comic-title" style="font-size: 44px; color: var(--comic-green); margin-bottom: 12px; text-shadow: 2px 2px 0px #000;">
+                    ✅ Comic Exported Successfully!
+                </h1>
+
+                <p style="font-size: 19px; font-weight: 700; color: #333; margin-bottom: 28px; line-height: 1.5;">
+                    Your AI-powered comic has been compiled and saved! Dive back in and bring another story to life.
+                </p>
+
+                <!-- PDF File Details Box -->
+                <div style="background: #fbf7ec; border: var(--border-ink); border-radius: 8px; padding: 18px 24px; margin-bottom: 34px; text-align: left; box-shadow: var(--shadow-comic-sm);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                        <div>
+                            <span style="font-family: var(--font-action); font-size: 18px; color: var(--comic-red);">DOCUMENT ARCHIVE:</span>
+                            <div style="font-family: monospace; font-size: 15px; color: #222; font-weight: bold; margin-top: 4px;">
+                                {{ pdf_path }}
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <a href="{{ pdf_path }}" target="_blank" class="comic-btn btn-white" style="font-size: 16px; padding: 8px 16px;">
+                                👁️ Open in Tab
+                            </a>
+                            <a href="/download-pdf?file_path={{ pdf_path }}" class="comic-btn btn-yellow" style="font-size: 16px; padding: 8px 16px;">
+                                📥 Download Again
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Call to Action Button: "Go Create Another Comic" -->
+                <div style="margin-top: 30px;">
+                    <a href="/" id="create-another-btn" class="comic-btn btn-primary" style="font-size: 26px; padding: 16px 42px; display: inline-flex;">
+                        <span>🎨 Go Create Another Comic</span>
+                    </a>
+                </div>
+
+                <!-- Comic strip bonus tip -->
+                <div style="margin-top: 40px; border-top: 2px dashed #ccc; padding-top: 20px;">
+                    <span class="stamp-approved">★ COMIC ARTIST TIP ★</span>
+                    <p style="font-size: 15px; font-style: italic; color: #666; margin-top: 8px;">
+                        Try experimenting with different tones like "funny" or art styles like "anime" to see how the Gemini narrative adapts!
+                    </p>
+                </div>
+            </div>
+        </main>
+
+        <footer class="comic-footer">
+            ComicCraft AI Studio &bull; Made with FastAPI &amp; Gemini AI
+        </footer>
+    </div>
+</body>
+</html>
