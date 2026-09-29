@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comic Archive &amp; Gallery - ComicCraft</title>
+    <meta name="description" content="View all generated comic stories, user creations, and PDF archives.">
+    <link rel="stylesheet" href="/static/css/comic.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
+</head>
+<body>
+    <div class="comic-texture-wrapper">
+        <!-- Top Comic Header -->
+        <header class="comic-header">
+            <div class="comic-header-inner">
+                <a href="/" class="comic-logo">
+                    <span class="logo-badge">ARCHIVES</span>
+                    <span class="logo-text">COMICCRAFT</span>
+                    <span class="logo-tagline">GALLERY VAULT</span>
+                </a>
+                <div class="comic-nav-links">
+                    <a href="/" class="comic-btn btn-action" style="font-size: 16px; padding: 6px 16px;">
+                        + New Comic
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Container -->
+        <main style="max-width: 1000px; margin: 40px auto; padding: 0 16px;">
+            <div class="comic-card">
+                <div class="comic-card-header">
+                    <div>
+                        <span class="issue-badge">PUBLISHED ISSUES</span>
+                        <h1 class="comic-title" style="margin-top: 8px;">COMIC VAULT &amp; RECORDS</h1>
+                        <p class="comic-subtitle">All generated comics, panel art, and exported PDF publications.</p>
+                    </div>
+                    <span class="stamp-approved">LIBRARY ARCHIVE</span>
+                </div>
+
+                {% if comics and comics|length > 0 %}
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; margin-top: 20px;">
+                    {% for item in comics %}
+                    <div class="comic-panel-box" style="box-shadow: var(--shadow-comic);">
+                        <div class="panel-banner-header" style="padding: 8px 14px;">
+                            <span class="panel-banner-title" style="font-size: 18px;">{{ item.filename }}</span>
+                            <span class="panel-badge" style="font-size: 13px;">PDF</span>
+                        </div>
+                        <div style="padding: 16px; background: #fff;">
+                            <p style="font-size: 14px; color: #666; margin-bottom: 12px;">
+                                <strong>Created:</strong> {{ item.created_at }}<br>
+                                <strong>File Size:</strong> {{ item.size_kb }} KB
+                            </p>
+                            <div style="display: flex; gap: 8px;">
+                                <a href="/{{ item.path.lstrip('/') }}" target="_blank" class="comic-btn btn-white" style="font-size: 14px; padding: 6px 12px; flex: 1;">
+                                    View
+                                </a>
+                                <a href="/download-pdf?file_path={{ item.path }}" class="comic-btn btn-yellow" style="font-size: 14px; padding: 6px 12px; flex: 1;">
+                                    Download
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div style="text-align: center; padding: 40px 20px;">
+                    <p style="font-size: 20px; font-weight: bold; color: #555;">No comics generated yet in this vault.</p>
+                    <a href="/" class="comic-btn btn-action" style="margin-top: 16px;">
+                        Create Your First Comic Now!
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </main>
+
+        <footer class="comic-footer">
+            ComicCraft AI Studio &bull; Archives &bull; Built with FastAPI &amp; Gemini
+        </footer>
+    </div>
+</body>
+</html>

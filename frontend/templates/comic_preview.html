@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comic Preview - ComicCraft</title>
+    <meta name="description" content="View your AI-generated multi-panel comic strip and download in high-resolution PDF format.">
+    <link rel="stylesheet" href="/static/css/comic.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+</head>
+<body>
+    <div class="comic-texture-wrapper">
+        <!-- Top Comic Header -->
+        <header class="comic-header">
+            <div class="comic-header-inner">
+                <a href="/" class="comic-logo">
+                    <span class="logo-badge">ISSUE PREVIEW</span>
+                    <span class="logo-text">COMICCRAFT</span>
+                </a>
+                <div class="comic-nav-links">
+                    <a href="/" class="comic-btn btn-white" style="font-size: 16px; padding: 6px 16px;">
+                        &larr; Create New Comic
+                    </a>
+                    <a href="/export-success?pdf_path={{ pdf_path }}" id="header-download-btn" class="comic-btn btn-danger" style="font-size: 16px; padding: 6px 16px;" onclick="triggerDownload('{{ pdf_path }}')">
+                        📥 Download PDF
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Preview Container -->
+        <main style="max-width: 980px; margin: 30px auto; padding: 0 16px;">
+            <!-- Comic Strip Overview Card -->
+            <div class="comic-card" style="margin-bottom: 24px; padding: 20px 28px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+                    <div>
+                        <span class="issue-badge">COMPLETE 5-PANEL STORY</span>
+                        <h1 class="comic-title" style="margin-top: 6px; font-size: 36px;">YOUR COMIC PREVIEW</h1>
+                        {% if story_prompt %}
+                        <p style="font-size: 16px; color: #444; margin-top: 4px; font-weight: 600;">
+                            <strong>PROMPT:</strong> "{{ story_prompt }}"
+                        </p>
+                        {% endif %}
+                    </div>
+                    <div style="text-align: right;">
+                        <span class="stamp-approved">INK PRINT READY</span>
+                        {% if character_name %}
+                        <div style="font-family: var(--font-marker); font-size: 14px; color: #555; margin-top: 6px;">
+                            Hero: <strong>{{ character_name }}</strong> &bull; Style: <strong>{{ style }}</strong>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comic Panel Sequence -->
+            <div class="comic-strip-container">
+                {% for panel in layout %}
+                <article class="comic-panel-box" id="panel-{{ panel.panel }}">
+                    <!-- Panel Banner Header -->
+                    <div class="panel-banner-header">
+                        <h2 class="panel-banner-title">
+                            Panel {{ panel.panel }}: {{ panel.title }}
+                        </h2>
+                        <span class="panel-badge">PANEL #{{ panel.panel }}</span>
+                    </div>
+
+                    <!-- Panel Image -->
+                    <div class="comic-panel-image-wrapper">
+                        {% if panel.image_path %}
+                        <img 
+                            src="/{{ panel.image_path.lstrip('/') }}" 
+                            alt="{{ panel.title }}" 
+                            class="comic-panel-img"
+                            loading="lazy"
+                        >
+                        {% else %}
+                        <div style="color: #fff; font-family: var(--font-action); font-size: 24px; padding: 40px; text-align: center;">
+                            [ILLUSTRATION GENERATING...]
+                        </div>
+                        {% endif %}
+
+                        <!-- Action sound effect starburst -->
+                        {% if panel.panel == 1 %}
+                        <div class="action-burst-overlay">WHAM!</div>
+                        {% elif panel.panel == 2 %}
+                        <div class="action-burst-overlay">SNEAK!</div>
+                        {% elif panel.panel == 3 %}
+                        <div class="action-burst-overlay">CRASH!</div>
+                        {% elif panel.panel == 4 %}
+                        <div class="action-burst-overlay">KAPOW!</div>
+                        {% else %}
+                        <div class="action-burst-overlay">VICTORY!</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Panel Narrative & Dialogue Body -->
+                    <div class="comic-panel-body">
+                        <!-- Scene Description (In Italics) -->
+                        {% if panel.scene_description %}
+                        <div class="comic-scene-desc">
+                            {{ panel.scene_description }}
+                        </div>
+                        {% endif %}
+
+                        <!-- Speech, Narration & Dialogue Parsing -->
+                        <div class="comic-panel-text-content">
+                            {% for line in panel.text.splitlines() %}
+                                {% set clean_line = line.strip() %}
+                                {% if clean_line %}
+                                    {% if clean_line.startswith('**CAPTION:**') or clean_line.startswith('CAPTION:') %}
+                                        <div class="comic-caption-box">
+                                            <span class="caption-label">CAPTION</span>
+                                            {{ clean_line.replace('**CAPTION:**', '').replace('CAPTION:', '').strip() }}
+                                        </div>
+                                    {% elif clean_line.startswith('**NARRATION:**') or clean_line.startswith('NARRATION:') %}
+                                        <div class="comic-speech-bubble" style="background-color: #f7fbff; border-left: 6px solid var(--comic-blue);">
+                                            <strong>NARRATION:</strong>
+                                            {{ clean_line.replace('**NARRATION:**', '').replace('NARRATION:', '').strip() }}
+                                        </div>
+                                    {% elif ':' in clean_line and not clean_line.startswith('http') %}
+                                        {% set speaker = clean_line.split(':', 1)[0].replace('*', '').strip() %}
+                                        {% set speech = clean_line.split(':', 1)[1].replace('*', '').strip() %}
+                                        <div class="comic-speech-bubble">
+                                            <strong>{{ speaker }}:</strong> {{ speech }}
+                                        </div>
+                                    {% else %}
+                                        <div class="comic-speech-bubble">
+                                            {{ clean_line.replace('*', '') }}
+                                        </div>
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+
+                        <!-- Image Prompt Reference (Expandable) -->
+                        {% if panel.image_prompt %}
+                        <details class="prompt-reference-details">
+                            <summary>🔍 View Scene Art Prompt (Stable Diffusion)</summary>
+                            <div class="prompt-reference-box">
+                                {{ panel.image_prompt }}
+                            </div>
+                        </details>
+                        {% endif %}
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
+
+            <!-- Sticky Bottom Comic Action Floating Bar -->
+            <div class="preview-action-bar">
+                <div>
+                    <h3 class="action-bar-title">YOUR COMIC STRIP IS READY!</h3>
+                    <p style="font-size: 14px; font-weight: 600; color: #444; margin: 0;">
+                        Export the complete 5-panel layout with illustrations as a high-res PDF.
+                    </p>
+                </div>
+                <div class="action-bar-btns">
+                    <a href="/" class="comic-btn btn-white" style="font-size: 18px;">
+                        &larr; Create Another
+                    </a>
+                    <button 
+                        id="download-pdf-btn" 
+                        class="comic-btn btn-action" 
+                        style="font-size: 20px; padding: 12px 28px;"
+                        onclick="handleDownloadAndRedirect('{{ pdf_path }}')"
+                    >
+                        📥 Download Your Comic as PDF
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <footer class="comic-footer">
+            ComicCraft AI Studio &bull; Multi-Panel AI Narrative Engine
+        </footer>
+    </div>
+
+    <!-- Download Trigger & Redirect Script -->
+    <script>
+        function triggerDownload(pdfUrl) {
+            // Initiate invisible file download
+            const link = document.createElement('a');
+            link.href = '/download-pdf?file_path=' + encodeURIComponent(pdfUrl);
+            link.download = pdfUrl.split('/').pop();
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function handleDownloadAndRedirect(pdfUrl) {
+            // Trigger download
+            triggerDownload(pdfUrl);
+            // Redirect to the success confirmation page as specified in Scenario 3 of PDF
+            setTimeout(() => {
+                window.location.href = '/export-success?pdf_path=' + encodeURIComponent(pdfUrl);
+            }, 800);
+        }
+    </script>
+</body>
+</html>
